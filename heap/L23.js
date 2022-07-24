@@ -9,14 +9,19 @@ class MinHeap {
   }
 
   pop() {
+    if (this.size() === 1) return this.heap.shift();
+    const top = this.heap[0];
     this.heap[0] = this.heap.pop();
     this.shiftDown(0);
+    return top;
   }
 
   shiftUp(index) {
     if (index === 0) return;
     const parentIndex = this.getParentIndex(index);
-    if (this.heap[parentIndex] > this.heap[index]) {
+    if (
+      this.heap[parentIndex]?.val > this.heap[index]?.val
+    ) {
       this.swap(parentIndex, index);
       this.shiftUp(parentIndex);
     }
@@ -25,11 +30,13 @@ class MinHeap {
   shiftDown(index) {
     const leftIndex = this.getLeftIndex(index);
     const rightIndex = this.getRightIndex(index);
-    if (this.heap[leftIndex] < this.heap[index]) {
+    if (this.heap[leftIndex]?.val < this.heap[index]?.val) {
       this.swap(leftIndex, index);
       this.shiftDown(leftIndex);
     }
-    if (this.heap[rightIndex] < this.heap[index]) {
+    if (
+      this.heap[rightIndex]?.val < this.heap[index]?.val
+    ) {
       this.swap(rightIndex, index);
       this.shiftDown(rightIndex);
     }
@@ -65,29 +72,32 @@ class MinHeap {
   }
 }
 
-const h = new MinHeap();
-h.insert(4);
-h.insert(2);
-h.insert(3);
-h.pop();
-
 /**
- * @param {number[]} nums
- * @param {number} k
- * @return {number}
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
  */
-//  * space O(K) time O(n * Logk)
-var findKthLargest = function (nums, k) {
+/**
+ * @param {ListNode[]} lists
+ * @return {ListNode}
+ */
+//  time O(nlogk) space O(k) 始终三个链表的头部元素在pk
+var mergeKLists = function (lists) {
+  const res = new ListNode(0);
+  let p = res;
   const h = new MinHeap();
-  // * n循环
-  nums.forEach((n) => {
-    h.insert(n);
-    // console.log(h)
-    if (h.size() > k) {
-      // * pop在一个完美二叉树 空间复杂度 是logN
-      h.pop();
-    }
-    // console.log(h)
+  lists.forEach((l) => {
+    if (l) h.insert(l);
   });
-  return h.peek();
+  // * 遍历了所有的链表节点总和
+  while (h.size()) {
+    // * k个链表头部在pk logk
+    const n = h.pop();
+    p.next = n;
+    p = p.next;
+    if (n.next) h.insert(n.next);
+  }
+  return res.next;
 };
