@@ -16,4 +16,5 @@ Array.prototype.binarySearch = function (item) {
   return -1;
 };
 
+// * 针对有序数组
 const res = [1, 2, 3, 4, 5].binarySearch(5);
